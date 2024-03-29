@@ -1,0 +1,179 @@
+
+<ReportName>Grades to Store</ReportName>
+<ReportTitle></ReportTitle>
+<AfterTitle></AfterTitle>
+<ReportDescription><textarea></textarea></ReportDescription>
+<ReportGroup>Grade Storage</ReportGroup>
+<SQLQuery><textarea>WITH STDCOURSES AS (
+	SELECT
+		course_top_standard,
+		coursesdcid
+	 
+	FROM u_def_ext_courses
+	 
+	WHERE 
+		course_top_standard IS NOT NULL
+	)
+
+SELECT DISTINCT
+	st.identifier as &quot;std identifier&quot;,
+	c.course_name as &quot;course_name&quot;,
+	c.course_number as &quot;course_number&quot;,
+	c.credittype as &quot;credit_type&quot;,
+	(CASE
+		WHEN sg.standardgrade IS NULL THEN 0
+		WHEN sg.standardgrade = 'INC' THEN 0
+                WHEN sg.standardgrade = 'P' THEN c.credit_hours
+		WHEN to_number(sg.standardgrade) &lt; 2.5 THEN 0
+	 	ELSE c.credit_hours 
+	 END) as &quot;earnedcrhrs&quot;,
+
+	(CASE
+		WHEN sg.standardgrade = 'INC' THEN 1
+		WHEN sg.standardgrade = 'P' THEN 1
+		ELSE c.excludefromclassrank
+	END) as &quot;excludefromclassrank&quot;,
+	
+	(CASE
+		WHEN sg.standardgrade = 'INC' THEN 1
+		WHEN sg.standardgrade = 'P' THEN 1
+		ELSE c.excludefromgpa 
+	END) AS &quot;excludefromgpa&quot;,
+	
+	'0' as &quot;excludefromgraduation&quot;,
+	
+	(CASE
+		WHEN sg.standardgrade = 'INC' THEN 1
+		ELSE c.excludefromhonorroll 
+	END) AS &quot;excludefromhonorroll&quot;,
+	
+	'0' as &quot;excludefromtranscripts&quot;,
+	(CASE 
+		WHEN sg.standardgrade = 'INC' THEN '0'
+		WHEN sg.standardgrade = 'P' THEN '0'
+		WHEN to_number(sg.standardgrade) &lt; 2.5 THEN '0'
+	    ELSE sg.standardgrade
+	END) as &quot;gpa_points&quot;,
+	
+	(CASE 
+		WHEN sg.standardgrade = 'INC' THEN 'I'
+		WHEN sg.standardgrade = 'P' THEN 'P'
+		WHEN to_number(sg.standardgrade) &lt; 2.5 THEN 'F'
+	    ELSE sg.standardgrade
+	END) as &quot;grade&quot;,
+	
+	s.grade_level as &quot;grade_level&quot;,
+	 c.credit_hours as &quot;potentialcrhrs&quot;,
+	
+	sec.schoolid AS &quot;schoolid&quot;,
+	sch.name AS &quot;schoolname&quot;,
+	sec.id AS &quot;sectionid&quot;,
+	'Y1' AS &quot;storecode&quot;,
+	s.id AS &quot;studentid&quot;,
+	(SELECT t.lastfirst FROM teachers t WHERE t.id=sec.teacher) AS &quot;teacher_name&quot;,
+	'Y1' AS &quot;termbinsname&quot;,
+	sec.termid AS &quot;termid&quot;,
+	s.lastfirst as &quot;student&quot;,
+	U_DEF_EXT_COURSES.course_top_standard
+
+FROM courses c
+	JOIN sections sec ON sec.course_number=c.course_number
+	JOIN schools sch ON sch.school_number=sec.schoolid
+	JOIN standardgradesection sg ON sg.sectionsdcid=sec.dcid
+	JOIN standard st ON st.standardid=sg.standardid
+	JOIN students s ON s.dcid=sg.studentsdcid
+	JOIN cc cc ON cc.studentid=s.id AND cc.sectionid=sec.id
+	LEFT JOIN U_DEF_EXT_COURSES ON c.DCID = U_DEF_EXT_COURSES.CoursesDCID
+
+WHERE
+	st.identifier IN (SELECT course_top_standard FROM STDCOURSES)
+	AND sec.termid LIKE 'tilde(curyearid)__'
+	AND c.excludefromstoredgrades = 0
+
+ORDER BY &quot;grade&quot; DESC</textarea></SQLQuery>
+<ReportHeader><th>std identifier</th><th>course_name</th><th>course_number</th><th>credit_type</th><th>earnedcrhrs</th><th>excludefromclassrank</th><th>excludefromgpa</th><th>excludefromgraduation</th><th>excludefromhonorroll</th><th>excludefromtranscripts</th><th>gpa_points</th><th>grade</th><th>grade_level</th><th>potentialcrhrs</th><th>schoolid</th><th>schoolname</th><th>sectionid</th><th>storecode</th><th>studentid</th><th>teacher_name</th><th>termbinsname</th><th>termid</th><th>student</th><th>course_top_standard</th></ReportHeader>
+<FLSMapField><textarea></textarea></FLSMapField>
+<ExcFrmList></ExcFrmList>
+<sqlReportsQ></sqlReportsQ>
+<sqlExportsReport></sqlExportsReport>
+<ReportDirections><textarea></textarea></ReportDirections>
+<ParameterName1></ParameterName1>
+<ParameterVal1></ParameterVal1>
+<ParameterCal1></ParameterCal1>
+<ParameterOpt1></ParameterOpt1>
+<ParameterName2></ParameterName2>
+<ParameterVal2></ParameterVal2>
+<ParameterCal2></ParameterCal2>
+<ParameterOpt2></ParameterOpt2>
+<ParameterName3></ParameterName3>
+<ParameterVal3></ParameterVal3>
+<ParameterCal3></ParameterCal3>
+<ParameterOpt3></ParameterOpt3>
+<ParameterName4></ParameterName4>
+<ParameterVal4></ParameterVal4>
+<ParameterCal4></ParameterCal4>
+<ParameterOpt4></ParameterOpt4>
+<ParameterName5></ParameterName5>
+<ParameterVal5></ParameterVal5>
+<ParameterCal5></ParameterCal5>
+<ParameterOpt5></ParameterOpt5>
+<ParameterName6></ParameterName6>
+<ParameterVal6></ParameterVal6>
+<ParameterCal6></ParameterCal6>
+<ParameterOpt6></ParameterOpt6>
+<ParameterName7></ParameterName7>
+<ParameterVal7></ParameterVal7>
+<ParameterCal7></ParameterCal7>
+<ParameterOpt7></ParameterOpt7>
+<ParameterName8></ParameterName8>
+<ParameterVal8></ParameterVal8>
+<ParameterCal8></ParameterCal8>
+<ParameterOpt8></ParameterOpt8>
+<CreateStudentSelectionB></CreateStudentSelectionB>
+<AddToCurSel></AddToCurSel>
+<ShowCurSelLine></ShowCurSelLine>
+<CreateStudentSelection>0</CreateStudentSelection>
+<StudentSelectionQuery></StudentSelectionQuery>
+<ExecGrp></ExecGrp>
+<sqlReportHeader><textarea></textarea></sqlReportHeader>
+<sqlReportFooter><textarea></textarea></sqlReportFooter>
+<sqlChartsReport></sqlChartsReport>
+<InitialsqlChart></InitialsqlChart>
+<InitialChartName></InitialChartName>
+<HideCopyButton></HideCopyButton>
+<HideCSVButton>1</HideCSVButton>
+<HideTabButton></HideTabButton>
+<HidePrint>1</HidePrint>
+<HidePDFButton>1</HidePDFButton>
+<ShowJSON></ShowJSON>
+<ShowSHC></ShowSHC>
+<NoCSVQuotes></NoCSVQuotes>
+<NoHeaderRow></NoHeaderRow>
+<NoFooterRow></NoFooterRow> 
+<NoTitleOrHeaderCopy></NoTitleOrHeaderCopy>
+<PdfOrientation></PdfOrientation>
+<PdfPageSize></PdfPageSize>
+<PrintButtonImages></PrintButtonImages>
+<OpeninNewWindow>0</OpeninNewWindow>
+<ValueLi3>0</ValueLi3>
+<HideParams></HideParams>
+<ShowGridlines></ShowGridlines>
+<IncludeRowNumber>0</IncludeRowNumber>
+<ShowSearchBox></ShowSearchBox>
+<ShowResultsInfoTop></ShowResultsInfoTop>
+<ShowResultsInfo></ShowResultsInfo>
+<UseColFilt>1</UseColFilt>
+<UseColRe></UseColRe>
+<UseFixHdr></UseFixHdr>
+<NoRowSel></NoRowSel>
+<UsePagination></UsePagination>
+<PaginationInitialLength>10</PaginationInitialLength>
+<UseAllWithPagination></UseAllWithPagination>
+<UseRowGroups></UseRowGroups>
+<UseRowGroupsOptions></UseRowGroupsOptions>
+<RowGroupsDesc></RowGroupsDesc>
+<DisplayRowGroupsCol></DisplayRowGroupsCol>
+<DisplaySubGroupsCol></DisplaySubGroupsCol>
+<UseRowGroupsCounts></UseRowGroupsCounts>
+<UseRowGroupsPageBreaks></UseRowGroupsPageBreaks>
+<ReportNotes><textarea></textarea></ReportNotes>
